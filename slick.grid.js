@@ -2130,26 +2130,31 @@ if (typeof Slick === "undefined") {
       return cellCssClasses[key];
     }
 
-    function flashCell(row, cell, speed) {
-      speed = speed || 100;
-      if (rowsCache[row]) {
-        var $cell = $(getCellNode(row, cell));
+    function flashCell(row, cell, speed, cssClass, occurrence, immediate) {
+        speed = speed || 100, cssClass = cssClass || '', occurrence = occurrence || 4, immediate = immediate || false;
+        if (rowsCache[row]) {
+            var $cell = $(getCellNode(row, cell));
 
-        function toggleCellClass(times) {
-          if (!times) {
-            return;
-          }
-          setTimeout(function () {
-                $cell.queue(function () {
-                  $cell.toggleClass(options.cellFlashingCssClass).dequeue();
-                  toggleCellClass(times - 1);
-                });
-              },
-              speed);
+            function toggleCellClass(times) {
+                if (!times) {
+                    return;
+                }
+                var delay = speed;
+                if (immediate) {
+                    delay = 0;
+                    immediate = false;
+                }
+                setTimeout(function () {
+                        $cell.queue(function () {
+                            $cell.toggleClass(cssClass || options.cellFlashingCssClass).dequeue();
+                            toggleCellClass(times - 1);
+                        });
+                    },
+                    delay);
+            }
+
+            toggleCellClass(occurrence);
         }
-
-        toggleCellClass(4);
-      }
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
